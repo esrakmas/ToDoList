@@ -10,3 +10,4 @@ data class Task(
     // Parametresiz kurucu
     constructor() : this("", "", "", "", "")
 }
+
