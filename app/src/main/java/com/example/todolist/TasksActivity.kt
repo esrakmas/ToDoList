@@ -1,18 +1,25 @@
 package com.example.todolist
 
-import AddTaskDialogAdapter
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+
 import com.example.todolist.databinding.ActivityTasksBinding
 import com.example.todolist.databinding.DialogAddTaskBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.FirebaseDatabase
+import com.google.android.material.tabs.TabLayoutMediator
 
 class TasksActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTasksBinding
     private val firebaseHelper = FirebaseHelper()
+    private val tabTitles = mutableSetOf<String>()  // to keep track of unique tab titles
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +30,9 @@ class TasksActivity : AppCompatActivity() {
         binding.fabAddTask.setOnClickListener {
             showTaskDialog()
         }
+
+        // Load tasks and update TabLayout
+        loadTasks()
     }
 
     private fun showTaskDialog() {
@@ -43,12 +53,11 @@ class TasksActivity : AppCompatActivity() {
                 val dueDate = dialogBinding.txtTaskDueDate.text.toString().trim()
                 val reminder = dialogBinding.txtSetReminder.text.toString().trim()
 
-                if (title.isNotEmpty() && description.isNotEmpty() && group.isNotEmpty() && dueDate.isNotEmpty() && reminder.isNotEmpty()) {
+                if (title.isNotEmpty() && group.isNotEmpty()) {
                     val task = Task(title, description, group, dueDate, reminder)
                     saveTaskToFirebase(task)
                 } else {
-                    // Show error message if any field is empty
-                    showToast("Lütfen tüm alanları doldurun.")
+                    showToast("Başlık ve grup bilgileri zorunludur.")
                 }
             }
             .setNegativeButton("İptal", null)
@@ -61,10 +70,41 @@ class TasksActivity : AppCompatActivity() {
         firebaseHelper.saveTask(task) { success ->
             if (success) {
                 showToast("Görev başarıyla kaydedildi.")
+                loadTasks()  // Refresh tab layout after saving task
             } else {
                 showToast("Görev kaydedilemedi.")
             }
         }
+    }
+
+    private fun loadTasks() {
+        val database = FirebaseDatabase.getInstance().reference.child("tasks")
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                tabTitles.clear()  // Clear previous titles
+                dataSnapshot.children.forEach { snapshot ->
+                    val task = snapshot.getValue(Task::class.java)
+                    task?.group?.let { group ->
+                        tabTitles.add(group)  // Add group name to the set
+                    }
+                }
+                updateTabLayout()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                showToast("Veriler yüklenemedi.")
+            }
+        })
+    }
+
+    private fun updateTabLayout() {
+        val adapter = TasksPagerAdapter(this, tabTitles.toList())
+        binding.viewPager.adapter = adapter
+
+        // Use TabLayoutMediator to set up the TabLayout with ViewPager2
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = tabTitles.toList()[position]
+        }.attach()
     }
 
     private fun showToast(message: String) {

@@ -5,12 +5,19 @@ import com.google.firebase.database.FirebaseDatabase
 
 class FirebaseHelper {
 
-    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference.child("tasks")
 
     fun saveTask(task: Task, onComplete: (Boolean) -> Unit) {
-        val taskId = database.child("tasks").push().key
+        val taskId = database.push().key
         if (taskId != null) {
-            database.child("tasks").child(taskId).setValue(task)
+            val taskToSave = Task(
+                title = task.title,
+                description = task.description.ifEmpty { "" },
+                group = task.group,
+                dueDate = task.dueDate.ifEmpty { "" },
+                reminder = task.reminder.ifEmpty { "" }
+            )
+            database.child(taskId).setValue(taskToSave)
                 .addOnCompleteListener { task ->
                     onComplete(task.isSuccessful)
                 }

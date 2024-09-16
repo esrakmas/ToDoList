@@ -4,6 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="task_groups">
+        <item>Diğer</item>
         <item>İş</item>
         <item>Okul</item>
         <item>Ev</item>
@@ -11,6 +12,6 @@
         <item>Kişisel</item>
         <item>Sağlık</item>
         <item>Alışveriş</item>
-        <item>Diğer</item>
+
     </string-array>
 </resources>
