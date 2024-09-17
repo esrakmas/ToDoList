@@ -1,5 +1,6 @@
 package com.example.todolist
 
+
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import com.example.todolist.databinding.DialogAddTaskBinding
@@ -9,7 +10,6 @@ import java.util.Locale
 
 class AddTaskDialogAdapter(private val binding: DialogAddTaskBinding) {
 
-    //Bu calendar nesnesi, tarih ve saat işlemlerini yönetmek için kullanılır.
     private val calendar = Calendar.getInstance()
 
     fun setup() {

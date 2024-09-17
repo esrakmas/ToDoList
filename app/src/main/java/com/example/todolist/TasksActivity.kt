@@ -57,7 +57,7 @@ class TasksActivity : AppCompatActivity() {
                     val task = Task(title, description, group, dueDate, reminder)
                     saveTaskToFirebase(task)
                 } else {
-                    showToast("Başlık ve grup bilgileri zorunludur.")
+                    showToast("Görev başlığı giriniz.")
                 }
             }
             .setNegativeButton("İptal", null)

@@ -11,6 +11,7 @@ class FirebaseHelper {
         val taskId = database.push().key
         if (taskId != null) {
             val taskToSave = Task(
+                id = taskId,
                 title = task.title,
                 description = task.description.ifEmpty { "" },
                 group = task.group,

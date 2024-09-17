@@ -7,5 +7,6 @@ data class Task(
     val dueDate: String = "",
     val reminder: String = "",
     val isCompleted: Boolean = false,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val id:String=""
 )

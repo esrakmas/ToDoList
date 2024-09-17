@@ -3,10 +3,14 @@ package com.example.todolist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.databinding.ItemTaskBinding
 
-class TasksAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
+class TasksAdapter(private val tasks: List<Task>) :
+    RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
+
+    private val firebaseHelper = FirebaseHelper()
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ItemTaskBinding.bind(itemView)
@@ -15,7 +19,41 @@ class TasksAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<TasksAd
             binding.taskTitle.text = task.title
             binding.taskDescription.text = task.description
             binding.taskDueDate.text = task.dueDate
-            binding.taskSetReminder.text=task.reminder
+            binding.taskSetReminder.text = task.reminder
+
+            binding.taskCheckbox.isChecked = task.isCompleted
+            binding.btnFavorite.isChecked = task.isFavorite
+
+            // Eşzamanlı güncellemeleri engellemek için bu değişiklikleri uygulayabilirsiniz
+            binding.taskCheckbox.setOnCheckedChangeListener { _, isChecked ->
+                if (binding.btnFavorite.isPressed) return@setOnCheckedChangeListener // Favori butonu basılıysa, CheckBox'ı işlemi atla
+                updateTask(task, isCompleted = isChecked)
+            }
+
+            binding.btnFavorite.setOnCheckedChangeListener { _, isChecked ->
+                if (binding.taskCheckbox.isPressed) return@setOnCheckedChangeListener // CheckBox basılıysa, Favori butonunu işlemi atla
+                updateTask(task, isFavorite = isChecked)
+            }
+        }
+
+        private fun updateTask(
+            task: Task,
+            isCompleted: Boolean? = null,
+            isFavorite: Boolean? = null
+        ) {
+            val updatedTask = task.copy(
+                isCompleted = isCompleted ?: task.isCompleted,
+                isFavorite = isFavorite ?: task.isFavorite
+            )
+            firebaseHelper.updateTask(task.id, updatedTask) { success ->
+                if (success) {
+                    Toast.makeText(binding.root.context, "Güncelleme başarılı", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(binding.root.context, "Güncelleme başarısız", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
         }
     }
 

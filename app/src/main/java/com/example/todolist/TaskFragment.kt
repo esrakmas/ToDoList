@@ -18,7 +18,8 @@ class TaskFragment : Fragment() {
     private lateinit var binding: FragmentTaskBinding
     private lateinit var tasksAdapter: TasksAdapter
     private val tasksList = mutableListOf<Task>()
-    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference.child("tasks")
+    private val database: DatabaseReference =
+        FirebaseDatabase.getInstance().reference.child("tasks")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
