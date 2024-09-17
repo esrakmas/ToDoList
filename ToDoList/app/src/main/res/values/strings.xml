@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">ToDoList</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="task_groups">
+        <item>Diğer</item>
+        <item>İş</item>
+        <item>Okul</item>
+        <item>Ev</item>
+        <item>Market</item>
+        <item>Kişisel</item>
+        <item>Sağlık</item>
+        <item>Alışveriş</item>
+
+    </string-array>
+</resources>
