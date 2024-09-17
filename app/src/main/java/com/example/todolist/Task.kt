@@ -5,8 +5,7 @@ data class Task(
     val description: String = "",
     val group: String = "",
     val dueDate: String = "",
-    val reminder: String = ""
-) {
-    // Parametresiz kurucu
-    constructor() : this("", "", "", "", "")
-}
+    val reminder: String = "",
+    val isCompleted: Boolean = false,
+    val isFavorite: Boolean = false
+)

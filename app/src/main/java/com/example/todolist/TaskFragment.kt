@@ -40,22 +40,23 @@ class TaskFragment : Fragment() {
     }
 
     private fun loadTasks(group: String) {
-        database.orderByChild("group").equalTo(group).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                tasksList.clear()
-                snapshot.children.forEach { dataSnapshot ->
-                    val task = dataSnapshot.getValue(Task::class.java)
-                    if (task != null) {
-                        tasksList.add(task)
+        database.orderByChild("group").equalTo(group)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    tasksList.clear()
+                    snapshot.children.forEach { dataSnapshot ->
+                        val task = dataSnapshot.getValue(Task::class.java)
+                        if (task != null) {
+                            tasksList.add(task)
+                        }
                     }
+                    tasksAdapter.notifyDataSetChanged()
                 }
-                tasksAdapter.notifyDataSetChanged()
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                // Handle possible errors.
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle possible errors.
+                }
+            })
     }
 
     companion object {

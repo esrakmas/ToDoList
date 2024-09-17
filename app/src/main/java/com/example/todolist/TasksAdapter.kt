@@ -15,6 +15,7 @@ class TasksAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<TasksAd
             binding.taskTitle.text = task.title
             binding.taskDescription.text = task.description
             binding.taskDueDate.text = task.dueDate
+            binding.taskSetReminder.text=task.reminder
         }
     }
 

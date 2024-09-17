@@ -15,7 +15,9 @@ class FirebaseHelper {
                 description = task.description.ifEmpty { "" },
                 group = task.group,
                 dueDate = task.dueDate.ifEmpty { "" },
-                reminder = task.reminder.ifEmpty { "" }
+                reminder = task.reminder.ifEmpty { "" },
+                isCompleted = task.isCompleted,
+                isFavorite = task.isFavorite
             )
             database.child(taskId).setValue(taskToSave)
                 .addOnCompleteListener { task ->
@@ -25,4 +27,15 @@ class FirebaseHelper {
             onComplete(false)
         }
     }
+
+    fun updateTask(taskId: String, updatedTask: Task, onComplete: (Boolean) -> Unit) {
+        // Güncellenmiş görev verilerini Firebase'e yaz
+        database.child(taskId).setValue(updatedTask)
+            .addOnCompleteListener { task ->
+                onComplete(task.isSuccessful)
+            }
+    }
+
+
+
 }

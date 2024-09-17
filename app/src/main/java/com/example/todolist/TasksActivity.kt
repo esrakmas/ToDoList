@@ -98,7 +98,7 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun updateTabLayout() {
-        val adapter = TasksPagerAdapter(this, tabTitles.toList())
+        val adapter = TasksActivityTabManager(this, tabTitles.toList())
         binding.viewPager.adapter = adapter
 
         // Use TabLayoutMediator to set up the TabLayout with ViewPager2
