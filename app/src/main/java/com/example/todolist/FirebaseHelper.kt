@@ -37,6 +37,12 @@ class FirebaseHelper {
             }
     }
 
+    // Yeni fonksiyon: Task'ı silmek için
+    fun deleteTask(taskId: String, onComplete: (Boolean) -> Unit) {
+        database.child(taskId).removeValue()
+            .addOnCompleteListener { task -> onComplete(task.isSuccessful) }
+    }
+
 
 
 }

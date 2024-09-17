@@ -25,10 +25,10 @@
         android:text="Görev Başlığı"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/btn_delete"
         app:layout_constraintStart_toEndOf="@id/task_checkbox"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.0" />
 
     <TextView
         android:id="@+id/task_description"
@@ -37,7 +37,6 @@
         android:layout_marginTop="8dp"
         android:text="Görev açıklaması"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/task_title" />
 
@@ -46,11 +45,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textSize="12dp"
         android:gravity="center"
+        android:textSize="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/task_description" />
-
 
     <TextView
         android:id="@+id/task_set_reminder"
@@ -65,23 +63,22 @@
 
     <CheckBox
         android:id="@+id/btn_favorite"
-        android:layout_width="32dp"
-        android:layout_height="29dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="30dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="12dp"
         android:background="?android:attr/selectableItemBackground"
         android:button="@drawable/baseline_star_border_24"
         android:contentDescription="Favorilere Ekle"
         app:layout_constraintBottom_toBottomOf="@id/task_due_date"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_delete"
         app:layout_constraintTop_toTopOf="@id/task_title"
-        app:layout_constraintVertical_bias="0.0" />
-
+        app:layout_constraintVertical_bias="0.02" />
 
     <ImageView
         android:id="@+id/btn_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="12dp"
         android:contentDescription="Düzenle"
         android:src="@drawable/baseline_edit_24"
         app:layout_constraintBottom_toBottomOf="@id/task_due_date"
@@ -93,11 +90,23 @@
         android:id="@+id/btn_reminder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="12dp"
         android:contentDescription="Hatırlatıcı"
         android:src="@drawable/baseline_notifications_active_24"
         app:layout_constraintBottom_toBottomOf="@id/task_due_date"
         app:layout_constraintEnd_toStartOf="@id/btn_edit"
+        app:layout_constraintTop_toTopOf="@id/task_title"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/btn_delete"
+        android:layout_width="26dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="Sil"
+        android:src="@drawable/baseline_delete_24"
+        app:layout_constraintBottom_toBottomOf="@id/task_due_date"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/task_title"
         app:layout_constraintVertical_bias="0.0" />
 

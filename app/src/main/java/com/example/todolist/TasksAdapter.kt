@@ -1,5 +1,6 @@
 package com.example.todolist
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,10 @@ class TasksAdapter(private val tasks: List<Task>) :
                 if (binding.taskCheckbox.isPressed) return@setOnCheckedChangeListener // CheckBox basılıysa, Favori butonunu işlemi atla
                 updateTask(task, isFavorite = isChecked)
             }
+
+            binding.btnDelete.setOnClickListener {
+                showDeleteConfirmationDialog(task.id)
+            }
         }
 
         private fun updateTask(
@@ -52,6 +57,27 @@ class TasksAdapter(private val tasks: List<Task>) :
                 } else {
                     Toast.makeText(binding.root.context, "Güncelleme başarısız", Toast.LENGTH_SHORT)
                         .show()
+                }
+            }
+        }
+
+        private fun showDeleteConfirmationDialog(taskId: String) {
+            AlertDialog.Builder(binding.root.context)
+                .setTitle("Silme Onayı")
+                .setMessage("Bu görevi silmek istediğinizden emin misiniz?")
+                .setPositiveButton("Evet") { _, _ ->
+                    deleteTask(taskId)
+                }
+                .setNegativeButton("Hayır", null)
+                .show()
+        }
+
+        private fun deleteTask(taskId: String) {
+            firebaseHelper.deleteTask(taskId) { success ->
+                if (success) {
+                    Toast.makeText(binding.root.context, "Görev silindi", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(binding.root.context, "Görev silme başarısız", Toast.LENGTH_SHORT).show()
                 }
             }
         }
