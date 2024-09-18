@@ -59,6 +59,7 @@ class TaskFragment : Fragment() {
             })
     }
 
+
     companion object {
         private const val ARG_GROUP = "arg_group"
 

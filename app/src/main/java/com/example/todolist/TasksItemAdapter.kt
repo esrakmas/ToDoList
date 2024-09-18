@@ -17,8 +17,9 @@ import com.example.todolist.databinding.DialogUpdateTaskBinding
 import com.example.todolist.databinding.ItemTaskBinding
 import java.util.Calendar
 
-//veri çekme
-class TasksItemAdapter(private val tasks: List<Task>) :
+// Diğer kodlar...
+
+class TasksItemAdapter(private val tasks: MutableList<Task>) :
     RecyclerView.Adapter<TasksItemAdapter.TaskViewHolder>() {
 
     private val firebaseHelper = FirebaseHelper()
@@ -36,11 +37,13 @@ class TasksItemAdapter(private val tasks: List<Task>) :
             binding.btnFavorite.isChecked = task.isFavorite
 
             binding.taskCheckbox.setOnCheckedChangeListener { _, isChecked ->
-
+                // Görev tamamlama güncelleme işlemi
+                updateTaskStatus(task.copy(isCompleted = isChecked))
             }
 
             binding.btnFavorite.setOnCheckedChangeListener { _, isChecked ->
-
+                // Görev favori güncelleme işlemi
+                updateTaskStatus(task.copy(isFavorite = isChecked))
             }
 
             binding.btnDelete.setOnClickListener {
@@ -50,21 +53,28 @@ class TasksItemAdapter(private val tasks: List<Task>) :
             binding.btnEdit.setOnClickListener {
                 // UpdateTaskDialogAdapter kullanarak güncelleme işlemini başlat
                 UpdateTaskDialogAdapter(itemView.context, task) { updatedTask ->
-                    // Güncellenen görev ile ilgili işlemler yapılabilir
-                    // Örneğin, adapter'ı güncelleyebilirsiniz
-                    notifyDataSetChanged()
-                }.show()
+                    updateTask(updatedTask)
+                }.showUpdateTaskDialog()
             }
         }
 
+        private fun updateTaskStatus(updatedTask: Task) {
+            firebaseHelper.updateTask(updatedTask.id, updatedTask) { success ->
+                if (success) {
+                    val position = tasks.indexOfFirst { it.id == updatedTask.id }
+                    if (position != -1) {
+                        tasks[position] = updatedTask
+                        notifyItemChanged(position)
+                    }
+                }
+            }
+        }
 
         private fun showDeleteConfirmationDialog(taskId: String) {
             AlertDialog.Builder(binding.root.context)
                 .setTitle("Silme Onayı")
                 .setMessage("Bu görevi silmek istediğinizden emin misiniz?")
-                .setPositiveButton("Evet") { _, _ ->
-                    deleteTask(taskId)
-                }
+                .setPositiveButton("Evet") { _, _ -> deleteTask(taskId) }
                 .setNegativeButton("Hayır", null)
                 .show()
         }
@@ -73,6 +83,11 @@ class TasksItemAdapter(private val tasks: List<Task>) :
             firebaseHelper.deleteTask(taskId) { success ->
                 if (success) {
                     Toast.makeText(binding.root.context, "Görev silindi", Toast.LENGTH_SHORT).show()
+                    val position = tasks.indexOfFirst { it.id == taskId }
+                    if (position != -1) {
+                        tasks.removeAt(position)
+                        notifyItemRemoved(position)
+                    }
                 } else {
                     Toast.makeText(binding.root.context, "Görev silme başarısız", Toast.LENGTH_SHORT).show()
                 }
@@ -90,4 +105,12 @@ class TasksItemAdapter(private val tasks: List<Task>) :
     }
 
     override fun getItemCount(): Int = tasks.size
+
+    fun updateTask(updatedTask: Task) {
+        val position = tasks.indexOfFirst { it.id == updatedTask.id }
+        if (position != -1) {
+            tasks[position] = updatedTask
+            notifyItemChanged(position)
+        }
+    }
 }

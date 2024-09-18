@@ -7,7 +7,7 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/et_task_title"
+        android:id="@+id/updateTaskTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Başlık"
@@ -16,36 +16,37 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/et_task_description"
+        android:id="@+id/updateTaskDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="Detay"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_task_title" />
+        app:layout_constraintTop_toBottomOf="@id/updateTaskTitle" />
 
     <Spinner
-        android:id="@+id/spinner_task_group"
+        android:id="@+id/updateSpinnerTaskGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:entries="@array/task_groups"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_task_description" />
+        app:layout_constraintTop_toBottomOf="@+id/updateTaskDescription" />
 
     <EditText
-        android:id="@+id/et_custom_group"
+        android:id="@+id/updateCustomGroup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:enabled="false"
         android:hint="Grup İsmi Giriniz"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinner_task_group" />
+        app:layout_constraintTop_toBottomOf="@+id/updateSpinnerTaskGroup" />
 
     <TextView
-        android:id="@+id/txt_task_due_date"
+        android:id="@+id/updateTaskDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -56,10 +57,10 @@
         android:hint="Tarih Seç"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_custom_group" />
+        app:layout_constraintTop_toBottomOf="@+id/updateCustomGroup" />
 
     <TextView
-        android:id="@+id/txt_set_reminder"
+        android:id="@+id/updateSetReminder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="120dp"
@@ -71,6 +72,6 @@
         android:hint="Hatırlatıcı Ekle"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_custom_group" />
+        app:layout_constraintTop_toBottomOf="@+id/updateCustomGroup" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

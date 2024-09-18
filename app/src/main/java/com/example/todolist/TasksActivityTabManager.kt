@@ -12,7 +12,6 @@ class TasksActivityTabManager(activity: FragmentActivity, private val tabTitles:
     }
 
     override fun createFragment(position: Int): Fragment {
-        val group = tabTitles[position]
-        return TaskFragment.newInstance(group)
+        return TaskFragment.newInstance(tabTitles[position])
     }
 }

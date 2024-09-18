@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_sort_new_to_old"
+        android:title="Sırala: Yeniden Eskiye"
+        android:icon="@drawable/ic_sort_new_to_old"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_sort_old_to_new"
+        android:title="Sırala: Eskiden Yeniye"
+        android:icon="@drawable/ic_sort_old_to_new"
+        app:showAsAction="ifRoom" />
+</menu>

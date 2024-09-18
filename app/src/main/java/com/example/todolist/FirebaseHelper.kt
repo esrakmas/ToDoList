@@ -32,13 +32,16 @@ class FirebaseHelper {
         }
     }
 
-    fun updateTask(taskId: String, updatedTask: Task, onComplete: (Boolean) -> Unit) {
-        // Güncellenmiş görev verilerini Firebase'e yaz
+    fun updateTask(taskId: String, updatedTask: Task, callback: (Boolean) -> Unit) {
         database.child(taskId).setValue(updatedTask)
-            .addOnCompleteListener { task ->
-                onComplete(task.isSuccessful)
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener {
+                callback(false)
             }
     }
+
 
     // Yeni fonksiyon: Task'ı silmek için
     fun deleteTask(taskId: String, onComplete: (Boolean) -> Unit) {
