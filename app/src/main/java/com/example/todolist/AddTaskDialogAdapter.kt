@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+//dialog içinde tıklama olayları
 class AddTaskDialogAdapter(private val binding: DialogAddTaskBinding) {
 
     private val calendar = Calendar.getInstance()

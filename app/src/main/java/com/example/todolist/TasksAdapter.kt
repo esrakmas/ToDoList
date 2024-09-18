@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.databinding.ItemTaskBinding
 
+//veri çekme
 class TasksAdapter(private val tasks: List<Task>) :
     RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
 

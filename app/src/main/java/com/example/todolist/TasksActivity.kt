@@ -3,6 +3,8 @@ package com.example.todolist
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -26,12 +28,10 @@ class TasksActivity : AppCompatActivity() {
         binding = ActivityTasksBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // FloatingActionButton Click Listener
         binding.fabAddTask.setOnClickListener {
             showTaskDialog()
         }
 
-        // Load tasks and update TabLayout
         loadTasks()
     }
 
@@ -43,13 +43,40 @@ class TasksActivity : AppCompatActivity() {
         val adapter = AddTaskDialogAdapter(dialogBinding)
         adapter.setup()
 
+
+        // Spinner'daki seçime göre EditText'in görünürlüğünü ayarlama
+        dialogBinding.spinnerTaskGroup.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (dialogBinding.spinnerTaskGroup.selectedItem.toString() == "Diğer") {
+                    dialogBinding.etCustomGroup.visibility = View.VISIBLE
+                    dialogBinding.etCustomGroup.isEnabled = true
+                    dialogBinding.etCustomGroup.isFocusable = true
+                    dialogBinding.etCustomGroup.isFocusableInTouchMode = true
+                    dialogBinding.etCustomGroup.requestFocus()
+
+                } else {
+                    dialogBinding.etCustomGroup.visibility = View.GONE
+                    dialogBinding.etCustomGroup.isEnabled = false
+                    dialogBinding.etCustomGroup.isFocusable = false
+
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+
         val dialog = AlertDialog.Builder(this)
             .setTitle("Yeni Görev")
             .setView(dialogView)
             .setPositiveButton("Kaydet") { _, _ ->
                 val title = dialogBinding.etTaskTitle.text.toString().trim()
                 val description = dialogBinding.etTaskDescription.text.toString().trim()
-                val group = dialogBinding.spinnerTaskGroup.selectedItem.toString()
+                val group = if (dialogBinding.spinnerTaskGroup.selectedItem.toString() == "Diğer") {
+                    dialogBinding.etCustomGroup.text.toString().trim()  // "Diğer" ise EditText'ten grup adı al
+                } else {
+                    dialogBinding.spinnerTaskGroup.selectedItem.toString()  // Diğer durumlarda Spinner'dan grup adı al
+                }
                 val dueDate = dialogBinding.txtTaskDueDate.text.toString().trim()
                 val reminder = dialogBinding.txtSetReminder.text.toString().trim()
 
