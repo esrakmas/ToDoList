@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.databinding.FragmentTaskBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -16,7 +15,7 @@ import com.google.firebase.database.ValueEventListener
 
 class TaskFragment : Fragment() {
     private lateinit var binding: FragmentTaskBinding
-    private lateinit var tasksAdapter: TasksAdapter
+    private lateinit var tasksItemAdapter: TasksItemAdapter
     private val tasksList = mutableListOf<Task>()
     private val database: DatabaseReference =
         FirebaseDatabase.getInstance().reference.child("tasks")
@@ -33,8 +32,8 @@ class TaskFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerViewTasks.layoutManager = LinearLayoutManager(context)
-        tasksAdapter = TasksAdapter(tasksList)
-        binding.recyclerViewTasks.adapter = tasksAdapter
+        tasksItemAdapter = TasksItemAdapter(tasksList)
+        binding.recyclerViewTasks.adapter = tasksItemAdapter
 
         val group = arguments?.getString(ARG_GROUP) ?: ""
         loadTasks(group)
@@ -51,7 +50,7 @@ class TaskFragment : Fragment() {
                             tasksList.add(task)
                         }
                     }
-                    tasksAdapter.notifyDataSetChanged()
+                    tasksItemAdapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {

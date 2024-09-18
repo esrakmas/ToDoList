@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.databinding.ItemTaskBinding
 
 //veri çekme
-class TasksAdapter(private val tasks: List<Task>) :
-    RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
+class TasksItemAdapter(private val tasks: List<Task>) :
+    RecyclerView.Adapter<TasksItemAdapter.TaskViewHolder>() {
 
     private val firebaseHelper = FirebaseHelper()
 
