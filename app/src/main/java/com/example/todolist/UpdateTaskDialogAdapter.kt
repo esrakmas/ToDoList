@@ -4,11 +4,13 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.todolist.databinding.DialogUpdateTaskBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -166,6 +168,8 @@ class UpdateTaskDialogAdapter(
                 if (success) {
                     Toast.makeText(context, "Güncelleme başarılı", Toast.LENGTH_SHORT).show()
                     onUpdate(updatedTask) // Callback'i çağır
+                    val intent = Intent("TASK_UPDATED")
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
                 } else {
                     Toast.makeText(context, "Güncelleme başarısız", Toast.LENGTH_SHORT).show()
                 }

@@ -1,10 +1,15 @@
 package com.example.todolist
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.todolist.databinding.ActivityTasksBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.database.FirebaseDatabase
@@ -24,6 +29,10 @@ class TasksActivity : AppCompatActivity() {
 
         setupListeners()
         loadTasks()
+
+        // BroadcastReceiver'ı kaydedin
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(taskUpdateReceiver, IntentFilter("TASK_UPDATED"))
     }
 
     private fun setupListeners() {
@@ -78,5 +87,18 @@ class TasksActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+
+    private val taskUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            loadTasks() // Görevler güncellendiğinde listeyi yeniden yükleyin
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // BroadcastReceiver'ı kaldırın
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(taskUpdateReceiver)
     }
 }
