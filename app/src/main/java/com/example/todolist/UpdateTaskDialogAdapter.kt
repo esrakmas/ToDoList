@@ -8,9 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import com.example.todolist.databinding.DialogUpdateTaskBinding
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class UpdateTaskDialogAdapter(
     private val context: Context,
@@ -20,6 +23,7 @@ class UpdateTaskDialogAdapter(
 
     private val binding = DialogUpdateTaskBinding.inflate(LayoutInflater.from(context))
     private val firebaseHelper = FirebaseHelper()
+    private val calendar = Calendar.getInstance()
 
     init {
         setupDialog()
@@ -97,35 +101,50 @@ class UpdateTaskDialogAdapter(
 
         // Due Date seçimi için tıklama olayını ekle
         txtDueDate.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            val datePickerDialog = DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    val selectedDate = "${dayOfMonth}/${month + 1}/${year}"
-                    txtDueDate.text = selectedDate
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            datePickerDialog.show()
+          showDatePickerDialog()
         }
 
         // Reminder seçimi için tıklama olayını ekle
         txtSetReminder.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            val timePickerDialog = TimePickerDialog(
-                context,
-                { _, hourOfDay, minute ->
-                    val selectedTime = String.format("%02d:%02d", hourOfDay, minute)
-                    txtSetReminder.text = selectedTime
-                },
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                true
-            )
-            timePickerDialog.show()
+            showTimePickerDialog()
         }
+    }
+
+    private fun showDatePickerDialog() {
+        val datePickerDialog = DatePickerDialog(
+            binding.root.context,
+            { _, year, month, dayOfMonth ->
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, month)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                updateDueDate()
+            },
+            calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.show()
+    }
+
+    private fun showTimePickerDialog() {
+        val timePickerDialog = TimePickerDialog(
+            binding.root.context,
+            { _, hourOfDay, minute ->
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minute)
+                updateReminderTime()
+            },
+            calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
+        )
+        timePickerDialog.show()
+    }
+
+    private fun updateDueDate() {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        binding.txtTaskDueDate.text = format.format(calendar.time)
+    }
+
+    private fun updateReminderTime() {
+        val format = SimpleDateFormat("HH:mm", Locale.getDefault())
+        binding.txtSetReminder.text = format.format(calendar.time)
     }
 
     private fun updateTask() {
