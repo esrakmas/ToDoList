@@ -1,6 +1,8 @@
 package com.example.todolist
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.databinding.DialogUpdateTaskBinding
 import com.example.todolist.databinding.ItemTaskBinding
+import java.util.Calendar
 
 //veri çekme
 class TasksItemAdapter(private val tasks: List<Task>) :
@@ -114,6 +117,38 @@ class TasksItemAdapter(private val tasks: List<Task>) :
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
 
+            // Due Date seçimi için tıklama olayını ekle
+            txtDueDate.setOnClickListener {
+                val calendar = Calendar.getInstance()
+                val datePickerDialog = DatePickerDialog(
+                    itemView.context,
+                    { _, year, month, dayOfMonth ->
+                        val selectedDate = "${dayOfMonth}/${month + 1}/${year}"
+                        txtDueDate.text = selectedDate
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+                datePickerDialog.show()
+            }
+
+            // Reminder seçimi için tıklama olayını ekle
+            txtSetReminder.setOnClickListener {
+                val calendar = Calendar.getInstance()
+                val timePickerDialog = TimePickerDialog(
+                    itemView.context,
+                    { _, hourOfDay, minute ->
+                        val selectedTime = String.format("%02d:%02d", hourOfDay, minute)
+                        txtSetReminder.text = selectedTime
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true
+                )
+                timePickerDialog.show()
+            }
+
             // Diyalog oluştur
             AlertDialog.Builder(itemView.context)
                 .setTitle("Görevi Güncelle")
@@ -147,7 +182,6 @@ class TasksItemAdapter(private val tasks: List<Task>) :
                 .create()
                 .show()
         }
-
 
         private fun updateTask(taskId: String, updatedTask: Task) {
             firebaseHelper.updateTask(taskId, updatedTask) { success ->
