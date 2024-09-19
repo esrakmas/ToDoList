@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import com.example.todolist.databinding.DialogAddTaskBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
-
 import java.util.Locale
 
 class AddTaskDialogAdapter(
@@ -23,17 +22,11 @@ class AddTaskDialogAdapter(
     private val firebaseHelper = FirebaseHelper()
     private val calendar = Calendar.getInstance()
 
-    val title = binding.addTaskTitle
-    val description = binding.addTaskDescription
-    val spinnerGroup = binding.addSpinnerTaskGroup
-    val customGroup = binding.addCustomGroup
-    val date = binding.addTaskDate
-    val reminder = binding.addSetReminder
-
     init {
-        setupDialog()
+        setupDialog()  // Dialog'un ayarlarını kur
     }
 
+    // Görev ekleme diyalogunu gösterir
     fun showAddTaskDialog() {
         AlertDialog.Builder(context)
             .setTitle("Yeni Görev")
@@ -44,48 +37,50 @@ class AddTaskDialogAdapter(
             .show()
     }
 
+    // Dialog başlangıç ayarları (Grup seçimi, tarih ve saat seçici)
     private fun setupDialog() {
-        setupGroupSelection()
-        setupDateAndTime()
+        setupGroupSelection()  // Grup seçimini kur
+        setupDateAndTime()  // Tarih ve saat seçimini kur
     }
 
+    // Görev grubu seçimi (Diğer seçilirse özel grup adı girilebilir)
     private fun setupGroupSelection() {
-        spinnerGroup.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val selectedGroup = spinnerGroup.selectedItem.toString()
-                if (selectedGroup == "Diğer") {
-                    customGroup.visibility = View.VISIBLE
-                    customGroup.requestFocus()
-                    customGroup.setText(task.group) // Mevcut grup adını EditText'e yaz
-                    customGroup.isEnabled = true
-                    customGroup.isFocusable = true
-                    customGroup.isFocusableInTouchMode = true
-                } else {
-                    customGroup.visibility = View.GONE
-                    customGroup.isEnabled = false
+        binding.addSpinnerTaskGroup.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val selectedGroup = binding.addSpinnerTaskGroup.selectedItem.toString()
+                    if (selectedGroup == "Diğer") {
+                        // Kullanıcıdan özel bir grup adı girmesini iste
+                        binding.addCustomGroup.visibility = View.VISIBLE
+                        binding.addCustomGroup.requestFocus()
+                        binding.addCustomGroup.setText(task.group)
+                    } else {
+                        binding.addCustomGroup.visibility = View.GONE
+                    }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
     }
 
+    // Tarih ve saat seçici kurar
     private fun setupDateAndTime() {
-        date.setOnClickListener { showDatePickerDialog() }
-        reminder.setOnClickListener { showTimePickerDialog() }
+        binding.addTaskDate.setOnClickListener { showDatePickerDialog() }
+        binding.addSetReminder.setOnClickListener { showTimePickerDialog() }
     }
 
+    // Tarih seçici diyalogunu gösterir
     private fun showDatePickerDialog() {
         DatePickerDialog(
             context,
             { _, year, month, dayOfMonth ->
                 calendar.set(year, month, dayOfMonth)
-                updateDueDate()
+                updateDueDate()  // Tarih alanını güncelle
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
@@ -93,54 +88,61 @@ class AddTaskDialogAdapter(
         ).show()
     }
 
+    // Saat seçici diyalogunu gösterir
     private fun showTimePickerDialog() {
         TimePickerDialog(context, { _, hour, minute ->
             calendar.set(Calendar.HOUR_OF_DAY, hour)
             calendar.set(Calendar.MINUTE, minute)
-            updateReminderTime()
+            updateReminderTime()  // Hatırlatıcı saatini güncelle
         }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
     }
 
+    // Seçilen tarihi gösterir
     private fun updateDueDate() {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        date.text = format.format(calendar.time)
+        binding.addTaskDate.text = format.format(calendar.time)
     }
 
+    // Seçilen hatırlatma saatini gösterir
     private fun updateReminderTime() {
         val format = SimpleDateFormat("HH:mm", Locale.getDefault())
-        reminder.text = format.format(calendar.time)
+        binding.addSetReminder.text = format.format(calendar.time)
     }
 
+    // Görevi kaydetmek için gerekli validasyonları yapar ve Firebase'e kaydeder
     private fun saveTask() {
-        val title = title.text.toString().trim()
-        val description = description.text.toString().trim()
-        val group = if (spinnerGroup.selectedItem.toString() == "Diğer") {
-            customGroup.text.toString().trim()
+        val title = binding.addTaskTitle.text.toString().trim()
+        val description = binding.addTaskDescription.text.toString().trim()
+        val group = if (binding.addSpinnerTaskGroup.selectedItem.toString() == "Diğer") {
+            binding.addCustomGroup.text.toString().trim()
         } else {
-            spinnerGroup.selectedItem.toString()
+            binding.addSpinnerTaskGroup.selectedItem.toString()
         }
-        val dueDate = date.text.toString().trim()
-        val reminder = reminder.text.toString().trim()
+        val dueDate = binding.addTaskDate.text.toString().trim()
+        val reminder = binding.addSetReminder.text.toString().trim()
 
+        // Görev başlığı ve grup boş değilse kaydet
         if (title.isNotEmpty() && group.isNotEmpty()) {
-            val task = Task(title, description, group, dueDate, reminder)
-            saveTaskToFirebase(task)
+            val newTask = Task(title, description, group, dueDate, reminder, false, false)
+            saveTaskToFirebase(newTask)
         } else {
             showToast("Görev başlığı giriniz.")
         }
     }
 
+    // Firebase'e görevi kaydeder
     private fun saveTaskToFirebase(task: Task) {
         firebaseHelper.saveTask(task) { success ->
             if (success) {
                 showToast("Görev başarıyla kaydedildi.")
-                onUpdate(task)  // Refresh tab layout after saving task
+                onUpdate(task)  // Görev kaydedildikten sonra tab'ları güncelle
             } else {
                 showToast("Görev kaydedilemedi.")
             }
         }
     }
 
+    // Kullanıcıya kısa mesaj gösterir
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolist.databinding.FragmentTaskBinding
@@ -31,38 +32,45 @@ class TaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // RecyclerView için layout manager ve adapter ayarlanıyor
         binding.recyclerViewTasks.layoutManager = LinearLayoutManager(context)
         tasksItemAdapter = TasksItemAdapter(tasksList)
         binding.recyclerViewTasks.adapter = tasksItemAdapter
 
+        // Argümanlardan grup adını alıyoruz
         val group = arguments?.getString(ARG_GROUP) ?: ""
-        loadTasks(group)
+        loadTasks(group)  // Görevleri Firebase'den yüklüyoruz
     }
 
+    // Firebase'den belirli gruba ait görevleri yükler
     private fun loadTasks(group: String) {
         database.orderByChild("group").equalTo(group)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    tasksList.clear()
+                    tasksList.clear()  // Önceki listeyi temizliyoruz
                     snapshot.children.forEach { dataSnapshot ->
                         val task = dataSnapshot.getValue(Task::class.java)
                         if (task != null) {
-                            tasksList.add(task)
+                            tasksList.add(task)  // Her bir görevi listeye ekliyoruz
                         }
                     }
-                    tasksItemAdapter.notifyDataSetChanged()
+                    tasksItemAdapter.notifyDataSetChanged()  // Adapter'a veri değişikliği bildiriliyor
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Handle possible errors.
+                    Toast.makeText(
+                        context,
+                        "Veriler yüklenirken bir hata oluştu: ${error.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
     }
 
-
     companion object {
         private const val ARG_GROUP = "arg_group"
 
+        // TaskFragment örneği oluşturulurken grup argümanını ekler
         fun newInstance(group: String): TaskFragment {
             val fragment = TaskFragment()
             val args = Bundle()

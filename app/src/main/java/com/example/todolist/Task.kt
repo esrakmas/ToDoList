@@ -6,7 +6,7 @@ data class Task(
     val group: String = "",
     val dueDate: String = "",
     val reminder: String = "",
-    val isCompleted: Boolean = false,
-    val isFavorite: Boolean = false,
+    val completed: Boolean = false,
+    val favorite: Boolean = false,
     val id:String=""
 )

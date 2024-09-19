@@ -9,7 +9,7 @@ class GroupManager(
     private val context: Context,
     private val firebaseHelper: FirebaseHelper,
     private val reloadTasksCallback: () -> Unit  // Callback ekliyoruz
-)  {
+) {
 
     // Grup seçenekleri diyalogunu gösterir (Güncelle veya Sil)
     fun showGroupOptionsDialog(group: String) {
@@ -48,7 +48,7 @@ class GroupManager(
     private fun updateGroupName(oldGroup: String, newGroup: String) {
         firebaseHelper.updateGroupName(oldGroup, newGroup) { success ->
             if (success) {
-                reloadTasksCallback()
+                reloadTasksCallback()  // Görevleri yeniden yüklemek için callback
                 showToast("Grup adı güncellendi")
             } else {
                 showToast("Grup adı güncellenemedi")
@@ -70,9 +70,8 @@ class GroupManager(
     private fun deleteGroupAndTasks(group: String) {
         firebaseHelper.deleteGroup(group) { success ->
             if (success) {
-                reloadTasksCallback()
+                reloadTasksCallback()  // Görevlerin yeniden yüklenmesi için callback
                 showToast("Grup ve görevler silindi")
-
             } else {
                 showToast("Grup silinemedi")
             }
