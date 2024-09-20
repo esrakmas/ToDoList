@@ -118,12 +118,13 @@ class AddTaskDialogAdapter(
         } else {
             binding.addSpinnerTaskGroup.selectedItem.toString()
         }
-        val dueDate = binding.addTaskDate.text.toString().trim()
-        val reminder = binding.addSetReminder.text.toString().trim()
+        val dueDate = calendar.timeInMillis  // Kullanıcının seçtiği tarih
+        val reminder = calendar.timeInMillis  // Kullanıcının seçtiği hatırlatma saati
 
         // Görev başlığı ve grup boş değilse kaydet
         if (title.isNotEmpty() && group.isNotEmpty()) {
-            val newTask = Task(title, description, group, dueDate, reminder, false, false)
+            val newTask = Task(title, description, group, dueDate= dueDate, reminder, false, false,false)
+
             saveTaskToFirebase(newTask)
         } else {
             showToast("Görev başlığı giriniz.")

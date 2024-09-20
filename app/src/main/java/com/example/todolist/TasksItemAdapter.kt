@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.databinding.ItemTaskBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TasksItemAdapter(private val tasks: MutableList<Task>) :
     RecyclerView.Adapter<TasksItemAdapter.TaskViewHolder>() {
@@ -29,11 +31,17 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
         private fun bindTaskData(task: Task) {
             binding.taskTitle.text = task.title
             binding.taskDescription.text = task.description
-            binding.taskDueDate.text = task.dueDate
-            binding.taskSetReminder.text = task.reminder
+
+            // Long türündeki dueDate ve reminder'ı String formatında göster
+            val dueDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val reminderFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+            binding.taskDueDate.text = dueDateFormat.format(task.dueDate)
+            binding.taskSetReminder.text = reminderFormat.format(task.reminder)
 
             binding.taskCheckbox.isChecked = task.completed
             binding.btnFavorite.isChecked = task.favorite
+            binding.btnReminder.isChecked = task.notification  // Eklenen satır
         }
 
         // Görev ile ilgili listener'ları kurar
@@ -44,6 +52,10 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
 
             binding.btnFavorite.setOnCheckedChangeListener { _, isChecked ->
                 updateTaskStatus(task.copy(favorite = isChecked)) // Görev favori durumu güncelleme
+            }
+
+            binding.btnReminder.setOnCheckedChangeListener { _, isChecked ->  // Eklenen satır
+                updateTaskStatus(task.copy(notification = isChecked)) // Görev hatırlatıcı durumu güncelleme
             }
 
             binding.btnDelete.setOnClickListener {
@@ -103,9 +115,6 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
             if (position != -1) {
                 tasks.removeAt(position)
                 notifyItemRemoved(position)
-
-                // Listeyi tamamen yenile
-                notifyDataSetChanged()
 
                 // Diğer aktiviteleri güncellemek için broadcast gönder
                 val intent = Intent("TASK_UPDATED")

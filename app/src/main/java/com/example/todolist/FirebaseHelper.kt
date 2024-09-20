@@ -19,10 +19,11 @@ class FirebaseHelper {
                 title = task.title,
                 description = task.description.ifEmpty { "" },
                 group = task.group,
-                dueDate = task.dueDate.ifEmpty { "" },
-                reminder = task.reminder.ifEmpty { "" },
+                dueDate = task.dueDate,
+                reminder = task.reminder,
                 completed = task.completed,
                 favorite = task.favorite,
+                notification = task.notification,  // notification alanını ekle
                 id = taskId
             )
             database.child(taskId).setValue(taskToSave)

@@ -38,12 +38,17 @@ class UpdateTaskDialogAdapter(
     }
 
     private fun setupDialog() {
-        // Mevcut verileri doldur
         with(binding) {
+            // Mevcut verileri doldur
             updateTaskTitle.setText(task.title)
             updateTaskDescription.setText(task.description)
-            updateTaskDate.text = task.dueDate
-            updateSetReminder.text = task.reminder
+
+            // Long türündeki dueDate ve reminder alanlarını, String olarak kullanıcıya göster
+            val dueDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val reminderFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+            updateTaskDate.text = dueDateFormat.format(task.dueDate)
+            updateSetReminder.text = reminderFormat.format(task.reminder)
 
             setupDateAndTime()
             setupGroupSelection()
@@ -63,7 +68,6 @@ class UpdateTaskDialogAdapter(
         val groupPosition = adapter.getPosition(task.group)
         binding.updateSpinnerTaskGroup.setSelection(groupPosition)
 
-        // Custom group handling
         with(binding) {
             if (task.group == "Diğer") {
                 updateCustomGroup.apply {
@@ -154,8 +158,10 @@ class UpdateTaskDialogAdapter(
         } else {
             binding.updateSpinnerTaskGroup.selectedItem.toString().trim()
         }
-        val dueDate = binding.updateTaskDate.text.toString().trim()
-        val reminder = binding.updateSetReminder.text.toString().trim()
+
+        // `dueDate` ve `reminder` alanlarını Unix timestamp (Long) olarak al
+        val dueDate = calendar.timeInMillis
+        val reminder = calendar.timeInMillis
 
         if (title.isNotEmpty() && group.isNotEmpty()) {
             val updatedTask = task.copy(
@@ -165,7 +171,8 @@ class UpdateTaskDialogAdapter(
                 dueDate = dueDate,
                 reminder = reminder
             )
-            firebaseHelper.updateTask(task.id, updatedTask) { success ->
+            // Burayı güncelle
+            firebaseHelper.updateTask(updatedTask.id, updatedTask) { success ->
                 if (success) {
                     Toast.makeText(context, "Güncelleme başarılı", Toast.LENGTH_SHORT).show()
                     onUpdate(updatedTask)
@@ -177,4 +184,5 @@ class UpdateTaskDialogAdapter(
             Toast.makeText(context, "Başlık ve grup adı girilmelidir.", Toast.LENGTH_SHORT).show()
         }
     }
+
 }
