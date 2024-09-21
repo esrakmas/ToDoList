@@ -71,6 +71,14 @@ class TasksActivity : AppCompatActivity() {
             showAddTaskDialog()
         }
 
+        // Sıralama butonuna tıklama dinleyicisi
+        binding.sortBtn.setOnClickListener {
+            val sortDialogHelper = SortDialogHelper(this) { sortOption ->
+                handleSortOption(sortOption)
+            }
+            sortDialogHelper.showSortDialog()
+        }
+
         // Tab seçimi dinleyicisi
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {}
@@ -84,6 +92,93 @@ class TasksActivity : AppCompatActivity() {
             }
         })
     }
+    private fun handleSortOption(sortOption: SortDialogHelper.SortOption) {
+        when (sortOption) {
+            SortDialogHelper.SortOption.OLD_TO_NEW -> {
+                // Eski görevleri yeniye doğru sıralayın
+                sortTasksByOldToNew()
+            }
+            SortDialogHelper.SortOption.NEW_TO_OLD -> {
+                // Yeni görevleri eskiye doğru sıralayın
+                sortTasksByNewToOld()
+            }
+            SortDialogHelper.SortOption.DRAG_AND_DROP -> {
+                // Sürükleyerek sıralama işlemini başlat
+                enableDragAndDrop()
+            }
+        }
+    }
+
+    private fun sortTasksByOldToNew() {
+        val database = FirebaseDatabase.getInstance().reference.child("tasks")
+        database.orderByChild("dueDate").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val tasks = mutableListOf<Task>()
+                dataSnapshot.children.forEach { snapshot ->
+                    val task = snapshot.getValue(Task::class.java)
+                    if (task != null) {
+                        tasks.add(task)
+                    }
+                }
+                // Görevleri dueDate değerine göre eskiye doğru sıralayın
+                tasks.sortBy { it.dueDate }
+                Log.d(TAG, "Sorted tasks (Old to New): ${tasks.map { it.title }}") // Log ekle
+
+                // Her bir görevin order değerini güncelle
+                tasks.forEachIndexed { index, task ->
+                    val taskUpdates = mapOf("order" to index) // order değerini güncelle
+                    database.child(task.id).updateChildren(taskUpdates)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                showToast("Veriler yüklenemedi.")
+                Log.e(TAG, "Database error: ${databaseError.message}") // Hata logu ekle
+            }
+        })
+    }
+
+    private fun sortTasksByNewToOld() {
+        val database = FirebaseDatabase.getInstance().reference.child("tasks")
+        database.orderByChild("dueDate").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val tasks = mutableListOf<Task>()
+                dataSnapshot.children.forEach { snapshot ->
+                    val task = snapshot.getValue(Task::class.java)
+                    if (task != null) {
+                        tasks.add(task)
+                    }
+                }
+                // Görevleri dueDate değerine göre yeniye doğru sıralayın
+                tasks.sortByDescending { it.dueDate }
+                Log.d(TAG, "Sorted tasks (New to Old): ${tasks.map { it.title }}") // Log ekle
+
+                // Her bir görevin order değerini güncelle
+                tasks.forEachIndexed { index, task ->
+                    val taskUpdates = mapOf("order" to index) // order değerini güncelle
+                    database.child(task.id).updateChildren(taskUpdates)
+                }
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                showToast("Veriler yüklenemedi.")
+                Log.e(TAG, "Database error: ${databaseError.message}") // Hata logu ekle
+            }
+        })
+    }
+
+
+
+
+    private fun enableDragAndDrop() {
+        // Burada sürükleyerek sıralama özelliğini etkinleştirin
+        // RecyclerView veya başka bir bileşen üzerinde gerekli ayarlamaları yapın
+    }
+
+
+
+
 
     // Görev ekleme diyalogunu gösterir
     private fun showAddTaskDialog() {

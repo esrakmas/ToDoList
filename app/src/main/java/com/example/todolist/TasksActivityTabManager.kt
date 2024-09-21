@@ -10,6 +10,8 @@ class TasksActivityTabManager(
     private val tabTitles: List<String>  // Tab başlıklarını tutan liste
 ) : FragmentStateAdapter(activity) {
 
+
+
     // Tab sayısını döndürür
     override fun getItemCount(): Int {
         return tabTitles.size
@@ -19,4 +21,5 @@ class TasksActivityTabManager(
     override fun createFragment(position: Int): Fragment {
         return TaskFragment.newInstance(tabTitles[position])
     }
+
 }
