@@ -56,6 +56,9 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
 
             binding.btnReminder.setOnCheckedChangeListener { _, isChecked ->  // Eklenen satır
                 updateTaskStatus(task.copy(notification = isChecked)) // Görev hatırlatıcı durumu güncelleme
+
+
+
             }
 
             binding.btnDelete.setOnClickListener {

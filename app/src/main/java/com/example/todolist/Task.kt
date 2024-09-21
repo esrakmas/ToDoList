@@ -9,5 +9,6 @@ data class Task(
     val completed: Boolean = false,
     val favorite: Boolean = false,
     val notification: Boolean = false,
-    val id:String=""
+    val id:String="",
+    val order: Int = 0
 )

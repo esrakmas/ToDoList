@@ -2,17 +2,22 @@ package com.example.todolist
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.databinding.FragmentTaskBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import androidx.recyclerview.widget.ItemTouchHelper
+
 
 class TaskFragment : Fragment() {
     private lateinit var binding: FragmentTaskBinding
@@ -40,7 +45,56 @@ class TaskFragment : Fragment() {
         // Argümanlardan grup adını alıyoruz
         val group = arguments?.getString(ARG_GROUP) ?: ""
         loadTasks(group)  // Görevleri Firebase'den yüklüyoruz
+
+        // Sürükle-bırak işlevini ekle
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.adapterPosition
+                val toPosition = target.adapterPosition
+
+                // Görev listesini güncelle
+                tasksList.add(toPosition, tasksList.removeAt(fromPosition))
+                tasksItemAdapter.notifyItemMoved(fromPosition, toPosition)
+
+                // Firebase'de yeni sıralamayı kaydet
+                saveOrderToFirebase(group)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // Sürükleme işlemi sırasında kaydırma olayı kullanılmadığı için boş bırakıyoruz
+            }
+        }
+
+        // ItemTouchHelper'ı RecyclerView'a ekle
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(binding.recyclerViewTasks)
+
     }
+
+
+
+
+
+
+
+
+
+
+    // Görevlerin sırasını Firebase'e kaydet
+    private fun saveOrderToFirebase(group: String) {
+        tasksList.forEachIndexed { index, task ->
+            val taskRef = database.child(task.id)
+            taskRef.child("order").setValue(index)
+        }
+    }
+
 
     // Firebase'den belirli gruba ait görevleri yükler
     private fun loadTasks(group: String) {
@@ -79,4 +133,6 @@ class TaskFragment : Fragment() {
             return fragment
         }
     }
+
+
 }

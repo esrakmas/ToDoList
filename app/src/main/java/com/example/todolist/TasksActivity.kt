@@ -1,10 +1,16 @@
 package com.example.todolist
 
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -22,10 +28,16 @@ class TasksActivity : AppCompatActivity() {
     private val firebaseHelper = FirebaseHelper()
     private val tabTitles = mutableSetOf<String>()
     private val groupManager by lazy { GroupManager(this, firebaseHelper) { loadTasks() } }
+    private lateinit var alarmManager: AlarmManager
+    private lateinit var pendingIntent: PendingIntent
+
+
+    private val TAG = "TasksActivity" // Log etiketi
 
     // BroadcastReceiver
     private val taskUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d(TAG, "Broadcast received, reloading tasks.")
             loadTasks() // Görevler güncellendiğinde çağrılır
         }
     }
@@ -39,10 +51,18 @@ class TasksActivity : AppCompatActivity() {
         setupListeners()
         loadTasks()
 
+
+
+
         // BroadcastReceiver'ı kaydet
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(taskUpdateReceiver, IntentFilter("TASK_UPDATED"))
+        Log.d(TAG, "BroadcastReceiver registered.")
     }
+
+
+
+
 
     // Dinleyicileri kurar (UI için)
     private fun setupListeners() {
@@ -59,6 +79,7 @@ class TasksActivity : AppCompatActivity() {
 
             override fun onTabReselected(tab: TabLayout.Tab) {
                 val selectedGroup = tab.text.toString()
+                Log.d(TAG, "Tab reselected: $selectedGroup")
                 groupManager.showGroupOptionsDialog(selectedGroup)
             }
         })
@@ -76,20 +97,25 @@ class TasksActivity : AppCompatActivity() {
     // Firebase'den görevleri yükler ve tabları günceller
     private fun loadTasks() {
         val database = FirebaseDatabase.getInstance().reference.child("tasks")
-        database.addValueEventListener(object : ValueEventListener {
+        Log.d(TAG, "Loading tasks from Firebase.")
+        database.orderByChild("order").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 tabTitles.clear()  // Mevcut grupları temizle
                 dataSnapshot.children.forEach { snapshot ->
                     val task = snapshot.getValue(Task::class.java)
                     task?.group?.let { group ->
                         tabTitles.add(group)
-                    }
+                        Log.d(TAG, "Group added: $group") }
+
+
                 }
                 updateTabLayout()  // Yeni verilerle tabları güncelle
+                Log.d(TAG, "Tab layout updated, total groups: ${tabTitles.size}")
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
                 showToast("Veriler yüklenemedi.")  // Hata durumunda mesaj göster
+                Log.e(TAG, "Database error: ${databaseError.message}")
             }
         })
     }
@@ -105,6 +131,7 @@ class TasksActivity : AppCompatActivity() {
 
         // Adaptör verilerini güncelle
         adapter.notifyDataSetChanged()
+        Log.d(TAG, "TabLayout updated with new adapter.")
     }
 
     // Toast mesajı gösterir
@@ -116,5 +143,6 @@ class TasksActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(taskUpdateReceiver)
+        Log.d(TAG, "BroadcastReceiver unregistered.")
     }
 }

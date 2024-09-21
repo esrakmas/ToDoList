@@ -1,5 +1,9 @@
 package com.example.todolist
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -11,27 +15,22 @@ class FirebaseHelper {
     private val database: DatabaseReference =
         FirebaseDatabase.getInstance().reference.child("tasks")
 
-    // Yeni bir görev ekler ve tamamlandığında geri bildirim sağlar
-    fun saveTask(task: Task, onComplete: (Boolean) -> Unit) {
+    fun saveTask(task: Task, context: Context, onComplete: (Boolean) -> Unit) {
         val taskId = database.push().key
         if (taskId != null) {
-            val taskToSave = Task(
-                title = task.title,
-                description = task.description.ifEmpty { "" },
-                group = task.group,
-                dueDate = task.dueDate,
-                reminder = task.reminder,
-                completed = task.completed,
-                favorite = task.favorite,
-                notification = task.notification,  // notification alanını ekle
-                id = taskId
-            )
+            val taskToSave = task.copy(id = taskId)
             database.child(taskId).setValue(taskToSave)
-                .addOnCompleteListener { task -> onComplete(task.isSuccessful) }
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+
+                    }
+                    onComplete(task.isSuccessful)
+                }
         } else {
             onComplete(false)
         }
     }
+
 
     // Var olan bir görevi günceller
     fun updateTask(taskId: String, updatedTask: Task, callback: (Boolean) -> Unit) {

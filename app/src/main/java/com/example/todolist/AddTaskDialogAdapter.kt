@@ -58,9 +58,11 @@ class AddTaskDialogAdapter(
                         // Kullanıcıdan özel bir grup adı girmesini iste
                         binding.addCustomGroup.visibility = View.VISIBLE
                         binding.addCustomGroup.requestFocus()
+                        binding.addCustomGroup.isEnabled = true
                         binding.addCustomGroup.setText(task.group)
                     } else {
                         binding.addCustomGroup.visibility = View.GONE
+                        binding.addCustomGroup.isEnabled = false
                     }
                 }
 
@@ -133,7 +135,7 @@ class AddTaskDialogAdapter(
 
     // Firebase'e görevi kaydeder
     private fun saveTaskToFirebase(task: Task) {
-        firebaseHelper.saveTask(task) { success ->
+        firebaseHelper.saveTask(task,context) { success ->
             if (success) {
                 showToast("Görev başarıyla kaydedildi.")
                 onUpdate(task)  // Görev kaydedildikten sonra tab'ları güncelle
