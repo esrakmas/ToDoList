@@ -66,6 +66,7 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
             binding.btnReminder.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     showReminderDialog(task) // Hatırlatıcı diyalogunu göster
+
                 } else {
                     updateTaskStatus(task.copy(notification = false)) // Hatırlatıcıyı kaldır
                 }

@@ -97,6 +97,7 @@ class TaskFragment : Fragment() {
 
 
     // Firebase'den belirli gruba ait görevleri yükler
+    // Firebase'den belirli gruba ait görevleri yükler
     private fun loadTasks(group: String) {
         database.orderByChild("group").equalTo(group)
             .addValueEventListener(object : ValueEventListener {
@@ -108,6 +109,10 @@ class TaskFragment : Fragment() {
                             tasksList.add(task)  // Her bir görevi listeye ekliyoruz
                         }
                     }
+
+                    // Görevleri "order" değerine göre sıralıyoruz
+                    tasksList.sortBy { it.order }
+
                     tasksItemAdapter.notifyDataSetChanged()  // Adapter'a veri değişikliği bildiriliyor
                 }
 
@@ -120,7 +125,6 @@ class TaskFragment : Fragment() {
                 }
             })
     }
-
     companion object {
         private const val ARG_GROUP = "arg_group"
 
