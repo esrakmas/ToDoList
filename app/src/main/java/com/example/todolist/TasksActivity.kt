@@ -8,11 +8,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.todolist.databinding.ActivityTasksBinding
 import com.google.android.material.tabs.TabLayout
@@ -21,6 +24,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import android.Manifest
+
 
 class TasksActivity : AppCompatActivity() {
 
@@ -47,6 +52,22 @@ class TasksActivity : AppCompatActivity() {
         binding = ActivityTasksBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+        // İzin kontrolü
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM), 1)
+            }
+        }
+
+        // Bildirim izni kontrolü
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 2)
+            }
+        }
+        createNotificationChannel() // Bildirim kanalını oluştur
+
         // UI ve dinleyicileri kur
         setupListeners()
         loadTasks()
@@ -61,6 +82,27 @@ class TasksActivity : AppCompatActivity() {
     }
 
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1 -> { // SCHEDULE_EXACT_ALARM izni
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // İzin verildi
+                } else {
+                    // İzin reddedildi
+                    showToast("Kesin alarm ayarlamak için izin verilmedi.")
+                }
+            }
+            2 -> { // POST_NOTIFICATIONS izni
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // İzin verildi
+                } else {
+                    // İzin reddedildi
+                    showToast("Bildirim göndermek için izin verilmedi.")
+                }
+            }
+        }
+    }
 
 
 
@@ -172,11 +214,28 @@ class TasksActivity : AppCompatActivity() {
 
 
     private fun enableDragAndDrop() {
-        // Burada sürükleyerek sıralama özelliğini etkinleştirin
+        // Sürükleyerek sıralama özelliğini etkinleştirin
         // RecyclerView veya başka bir bileşen üzerinde gerekli ayarlamaları yapın
+
+        Toast.makeText(this, "Görevleri sürükleyerek manuel sıralama yapabilirsiniz.", Toast.LENGTH_SHORT).show()
     }
 
 
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "task_reminder_channel",
+                "Hatırlatıcılar",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Görev hatırlatıcıları için kanal"
+            }
+
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
 
 
 
