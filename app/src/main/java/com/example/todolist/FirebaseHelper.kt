@@ -78,4 +78,32 @@ class FirebaseHelper {
             }
         })
     }
+
+
+
+    // Tüm favori görevleri getirir
+    fun getFavoriteTasks(callback: (List<Task>) -> Unit) {
+        val favoriteTasksRef = database.orderByChild("favorite").equalTo(true)
+        favoriteTasksRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val favoriteTasks = mutableListOf<Task>()
+                for (taskSnapshot in snapshot.children) {
+                    val task = taskSnapshot.getValue(Task::class.java)
+                    if (task != null) {
+                        favoriteTasks.add(task)
+                    }
+                }
+                callback(favoriteTasks)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Hata durumunda callback'i boş liste ile çağır
+                callback(emptyList())
+            }
+        })
+    }
+
+
+
+
 }

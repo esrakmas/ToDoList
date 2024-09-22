@@ -3,11 +3,13 @@ package com.example.todolist
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolist.databinding.DialogAddTaskBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -41,6 +43,13 @@ class AddTaskDialogAdapter(
     private fun setupDialog() {
         setupGroupSelection()  // Grup seçimini kur
         setupDateAndTime()  // Tarih ve saat seçimini kur
+        if (task.id.isNotEmpty()) {
+            loadTaskDetails() // Mevcut görev bilgilerini yükle
+        }
+
+        // Favori görevleri yükle
+        loadFavoriteTasks()
+
     }
 
     // Görev grubu seçimi (Diğer seçilirse özel grup adı girilebilir)
@@ -125,7 +134,7 @@ class AddTaskDialogAdapter(
 
         // Görev başlığı ve grup boş değilse kaydet
         if (title.isNotEmpty() && group.isNotEmpty()) {
-            val newTask = Task(title, description, group, dueDate= dueDate, reminder, false, false,false)
+            val newTask = Task(title, description, group, dueDate = dueDate, reminder = reminder)
 
             saveTaskToFirebase(newTask)
         } else {
@@ -135,7 +144,7 @@ class AddTaskDialogAdapter(
 
     // Firebase'e görevi kaydeder
     private fun saveTaskToFirebase(task: Task) {
-        firebaseHelper.saveTask(task,context) { success ->
+        firebaseHelper.saveTask(task, context) { success ->
             if (success) {
                 showToast("Görev başarıyla kaydedildi.")
                 onUpdate(task)  // Görev kaydedildikten sonra tab'ları güncelle
@@ -143,6 +152,45 @@ class AddTaskDialogAdapter(
                 showToast("Görev kaydedilemedi.")
             }
         }
+    }
+
+    private fun loadFavoriteTasks() {
+        val firebaseHelper = FirebaseHelper()
+        firebaseHelper.getFavoriteTasks { taskList ->
+            Log.d("FavoriteTasks", "Gelen görevler: ${taskList.size}")
+            val favoriteTasks = taskList.filter { it.favorite }
+            setupRecyclerView(favoriteTasks)
+        }
+    }
+
+    private fun setupRecyclerView(favoriteTasks: List<Task>) {
+        // LayoutManager ekleyin
+        binding.recyclerViewFavoriteTasks.layoutManager = LinearLayoutManager(context)
+
+        val adapter = FavoriteTasksAdapter(favoriteTasks) { task ->
+            // Görev seçildiğinde yapılacak işlemler
+        }
+        binding.recyclerViewFavoriteTasks.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
+
+
+
+    // Mevcut görev bilgilerini dialoga yükler
+    private fun loadTaskDetails() {
+        binding.addTaskTitle.setText(task.title)
+        binding.addTaskDescription.setText(task.description)
+        binding.addSpinnerTaskGroup.setSelection(getGroupIndex(task.group))
+        calendar.timeInMillis = task.dueDate  // Tarih ve saat için mevcut değeri ayarla
+        updateDueDate()
+        updateReminderTime()  // Hatırlatma zamanını güncelle
+    }
+
+    // Grup adının indexini bul
+    private fun getGroupIndex(group: String): Int {
+        val groups = context.resources.getStringArray(R.array.task_groups)
+        return groups.indexOf(group)
     }
 
     // Kullanıcıya kısa mesaj gösterir
