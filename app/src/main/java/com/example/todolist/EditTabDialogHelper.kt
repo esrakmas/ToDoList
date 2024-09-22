@@ -5,27 +5,25 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 
-class GroupManager(
+class EditTabDialogHelper(
     private val context: Context,
     private val firebaseHelper: FirebaseHelper,
-    private val reloadTasksCallback: () -> Unit  // Callback ekliyoruz
+    private val reloadTasksCallback: () -> Unit  // Callback
 ) {
-
-    // Grup seçenekleri diyalogunu gösterir (Güncelle veya Sil)
+    // tab  seçenekleri
     fun showGroupOptionsDialog(group: String) {
         val options = arrayOf("Grubu Güncelle", "Grubu Sil")
         AlertDialog.Builder(context)
             .setTitle("Seçenekler")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> showUpdateGroupDialog(group)  // Grup güncelleme diyalogunu göster
-                    1 -> showDeleteConfirmationDialog(group)  // Grup silme diyalogunu göster
+                    0 -> showUpdateGroupDialog(group)
+                    1 -> showDeleteConfirmationDialog(group)
                 }
             }
             .show()
     }
 
-    // Grup güncelleme diyalogu
     private fun showUpdateGroupDialog(oldGroup: String) {
         val editText = EditText(context).apply { hint = "Yeni grup adını girin" }
 
@@ -44,11 +42,10 @@ class GroupManager(
             .show()
     }
 
-    // Firebase'de grup adını günceller
     private fun updateGroupName(oldGroup: String, newGroup: String) {
         firebaseHelper.updateGroupName(oldGroup, newGroup) { success ->
             if (success) {
-                reloadTasksCallback()  // Görevleri yeniden yüklemek için callback
+                reloadTasksCallback()  //  yeniden yüklemek için callback
                 showToast("Grup adı güncellendi")
             } else {
                 showToast("Grup adı güncellenemedi")
@@ -56,7 +53,6 @@ class GroupManager(
         }
     }
 
-    // Grup silme onayı diyalogu
     private fun showDeleteConfirmationDialog(group: String) {
         AlertDialog.Builder(context)
             .setTitle("Grubu Sil")
@@ -66,7 +62,6 @@ class GroupManager(
             .show()
     }
 
-    // Grubu ve içindeki görevleri Firebase'den siler
     private fun deleteGroupAndTasks(group: String) {
         firebaseHelper.deleteGroup(group) { success ->
             if (success) {
@@ -78,7 +73,6 @@ class GroupManager(
         }
     }
 
-    // Toast mesajı gösterir
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }

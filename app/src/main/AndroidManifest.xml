@@ -32,7 +32,7 @@
         </activity>
 
         <!-- Bildirim alıcıyı ekleyin -->
-        <receiver android:name=".AlarmReceiver"/>
+
         <receiver android:name=".ReminderReceiver" />
 
 

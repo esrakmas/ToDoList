@@ -1,7 +1,6 @@
 package com.example.todolist
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class AddTaskDialogAdapter(
+class AddTaskDialogHelper(
     private val context: Context,
     private val task: Task,
     private val onUpdate: (Task) -> Unit
@@ -133,7 +132,7 @@ class AddTaskDialogAdapter(
 
         val adapter = FavoriteTasksAdapter(favoriteTasks) { task ->
             // Favori görev seçildiğinde AddTaskDialogAdapter'ı aç
-            val dialog = AddTaskDialogAdapter(context, task) { updatedTask ->
+            val dialog = AddTaskDialogHelper(context, task) { updatedTask ->
                 // Güncelleme sonrası yapılacak işlemler
             }
             dialog.showAddTaskDialog()
@@ -141,8 +140,6 @@ class AddTaskDialogAdapter(
         binding.recyclerViewFavoriteTasks.adapter = adapter
         adapter.notifyDataSetChanged()
     }
-
-
 
 
     // Mevcut görev bilgilerini dialoga yükler

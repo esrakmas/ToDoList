@@ -2,10 +2,8 @@ package com.example.todolist
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +15,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import androidx.recyclerview.widget.ItemTouchHelper
-
 
 class TaskFragment : Fragment() {
     private lateinit var binding: FragmentTaskBinding
@@ -37,14 +34,13 @@ class TaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // RecyclerView için layout manager ve adapter ayarlanıyor
         binding.recyclerViewTasks.layoutManager = LinearLayoutManager(context)
         tasksItemAdapter = TasksItemAdapter(tasksList)
         binding.recyclerViewTasks.adapter = tasksItemAdapter
 
         // Argümanlardan grup adını alıyoruz
         val group = arguments?.getString(ARG_GROUP) ?: ""
-        loadTasks(group)  // Görevleri Firebase'den yüklüyoruz
+        loadTasks(group)
 
         // Sürükle-bırak işlevini ekle
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
@@ -58,11 +54,9 @@ class TaskFragment : Fragment() {
                 val fromPosition = viewHolder.adapterPosition
                 val toPosition = target.adapterPosition
 
-                // Görev listesini güncelle
                 tasksList.add(toPosition, tasksList.removeAt(fromPosition))
                 tasksItemAdapter.notifyItemMoved(fromPosition, toPosition)
 
-                // Firebase'de yeni sıralamayı kaydet
                 saveOrderToFirebase(group)
                 return true
             }
@@ -72,22 +66,11 @@ class TaskFragment : Fragment() {
             }
         }
 
-        // ItemTouchHelper'ı RecyclerView'a ekle
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(binding.recyclerViewTasks)
 
     }
 
-
-
-
-
-
-
-
-
-
-    // Görevlerin sırasını Firebase'e kaydet
     private fun saveOrderToFirebase(group: String) {
         tasksList.forEachIndexed { index, task ->
             val taskRef = database.child(task.id)
@@ -95,25 +78,20 @@ class TaskFragment : Fragment() {
         }
     }
 
-
-    // Firebase'den belirli gruba ait görevleri yükler
-    // Firebase'den belirli gruba ait görevleri yükler
     private fun loadTasks(group: String) {
         database.orderByChild("group").equalTo(group)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    tasksList.clear()  // Önceki listeyi temizliyoruz
+                    tasksList.clear()
                     snapshot.children.forEach { dataSnapshot ->
                         val task = dataSnapshot.getValue(Task::class.java)
                         if (task != null) {
-                            tasksList.add(task)  // Her bir görevi listeye ekliyoruz
+                            tasksList.add(task)
                         }
                     }
-
                     // Görevleri "order" değerine göre sıralıyoruz
                     tasksList.sortBy { it.order }
-
-                    tasksItemAdapter.notifyDataSetChanged()  // Adapter'a veri değişikliği bildiriliyor
+                    tasksItemAdapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -125,10 +103,10 @@ class TaskFragment : Fragment() {
                 }
             })
     }
+
     companion object {
         private const val ARG_GROUP = "arg_group"
 
-        // TaskFragment örneği oluşturulurken grup argümanını ekler
         fun newInstance(group: String): TaskFragment {
             val fragment = TaskFragment()
             val args = Bundle()
@@ -137,6 +115,4 @@ class TaskFragment : Fragment() {
             return fragment
         }
     }
-
-
 }

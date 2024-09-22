@@ -22,7 +22,6 @@ class FirebaseHelper {
             database.child(taskId).setValue(taskToSave)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-
                     }
                     onComplete(task.isSuccessful)
                 }
@@ -31,21 +30,17 @@ class FirebaseHelper {
         }
     }
 
-
-    // Var olan bir görevi günceller
     fun updateTask(taskId: String, updatedTask: Task, callback: (Boolean) -> Unit) {
         database.child(taskId).setValue(updatedTask)
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { callback(false) }
     }
 
-    // Bir görevi siler
     fun deleteTask(taskId: String, onComplete: (Boolean) -> Unit) {
         database.child(taskId).removeValue()
             .addOnCompleteListener { task -> onComplete(task.isSuccessful) }
     }
 
-    // Belirli bir gruptaki tüm görevleri siler
     fun deleteGroup(group: String, onComplete: (Boolean) -> Unit) {
         val tasksRef = database.orderByChild("group").equalTo(group)
         tasksRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -62,7 +57,6 @@ class FirebaseHelper {
         })
     }
 
-    // Belirli bir gruptaki tüm görevlerin grup adını günceller
     fun updateGroupName(oldGroup: String, newGroup: String, onComplete: (Boolean) -> Unit) {
         val tasksRef = database.orderByChild("group").equalTo(oldGroup)
         tasksRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -79,9 +73,6 @@ class FirebaseHelper {
         })
     }
 
-
-
-    // Tüm favori görevleri getirir
     fun getFavoriteTasks(callback: (List<Task>) -> Unit) {
         val favoriteTasksRef = database.orderByChild("favorite").equalTo(true)
         favoriteTasksRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -102,8 +93,4 @@ class FirebaseHelper {
             }
         })
     }
-
-
-
-
 }

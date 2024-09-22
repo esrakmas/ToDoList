@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class UpdateTaskDialogAdapter(
+class UpdateTaskDialogHelper(
     private val context: Context,
     private val task: Task,
     private val onUpdate: (Task) -> Unit
@@ -39,11 +39,10 @@ class UpdateTaskDialogAdapter(
 
     private fun setupDialog() {
         with(binding) {
-            // Mevcut verileri doldur
+
             updateTaskTitle.setText(task.title)
             updateTaskDescription.setText(task.description)
 
-            // Long türündeki dueDate ve reminder alanlarını, String olarak kullanıcıya göster
             val dueDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val reminderFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
@@ -83,26 +82,32 @@ class UpdateTaskDialogAdapter(
                 }
             }
 
-            updateSpinnerTaskGroup.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val selectedGroup = updateSpinnerTaskGroup.selectedItem.toString()
-                    if (selectedGroup == "Diğer") {
-                        updateCustomGroup.apply {
-                            visibility = View.VISIBLE
-                            isEnabled = true
-                            requestFocus()
-                            setText(task.group)
-                        }
-                    } else {
-                        updateCustomGroup.apply {
-                            visibility = View.GONE
-                            isEnabled = false
+            updateSpinnerTaskGroup.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        val selectedGroup = updateSpinnerTaskGroup.selectedItem.toString()
+                        if (selectedGroup == "Diğer") {
+                            updateCustomGroup.apply {
+                                visibility = View.VISIBLE
+                                isEnabled = true
+                                requestFocus()
+                                setText(task.group)
+                            }
+                        } else {
+                            updateCustomGroup.apply {
+                                visibility = View.GONE
+                                isEnabled = false
+                            }
                         }
                     }
-                }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
         }
     }
 
@@ -159,7 +164,6 @@ class UpdateTaskDialogAdapter(
             binding.updateSpinnerTaskGroup.selectedItem.toString().trim()
         }
 
-        // `dueDate` ve `reminder` alanlarını Unix timestamp (Long) olarak al
         val dueDate = calendar.timeInMillis
         val reminder = calendar.timeInMillis
 
@@ -171,7 +175,7 @@ class UpdateTaskDialogAdapter(
                 dueDate = dueDate,
                 reminder = reminder
             )
-            // Burayı güncelle
+
             firebaseHelper.updateTask(updatedTask.id, updatedTask) { success ->
                 if (success) {
                     Toast.makeText(context, "Güncelleme başarılı", Toast.LENGTH_SHORT).show()

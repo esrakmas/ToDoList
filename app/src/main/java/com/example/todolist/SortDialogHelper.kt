@@ -9,12 +9,23 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 
-class SortDialogHelper(private val context: Context, private val onSortSelected: (SortOption) -> Unit) {
+class SortDialogHelper(
+    private val context: Context,
+    private val onSortSelected: (SortOption) -> Unit
+) {
 
     fun showSortDialog() {
         val sortOptions = listOf(
-            SortOptionItem(SortOption.OLD_TO_NEW, "Sırala: Eskiden Yeniye", R.drawable.ic_sort_old_to_new),
-            SortOptionItem(SortOption.NEW_TO_OLD, "Sırala: Yeniden Eskiye", R.drawable.ic_sort_new_to_old),
+            SortOptionItem(
+                SortOption.OLD_TO_NEW,
+                "Sırala: Eskiden Yeniye",
+                R.drawable.ic_sort_old_to_new
+            ),
+            SortOptionItem(
+                SortOption.NEW_TO_OLD,
+                "Sırala: Yeniden Eskiye",
+                R.drawable.ic_sort_new_to_old
+            ),
             SortOptionItem(SortOption.DRAG_AND_DROP, "Sırala: Sürükleyerek",
                 R.drawable.touch
             )
@@ -48,7 +59,8 @@ class SortDialogHelper(private val context: Context, private val onSortSelected:
     ) : ArrayAdapter<SortOptionItem>(context, 0, items) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.dialog_sort_option, parent, false)
+            val view = convertView ?: LayoutInflater.from(context)
+                .inflate(R.layout.dialog_sort_option, parent, false)
 
             val item = getItem(position)!!
             val icon: ImageView = view.findViewById(R.id.sort_icon)
