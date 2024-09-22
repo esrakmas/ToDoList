@@ -42,6 +42,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_tasks_title"
         app:tabGravity="fill"
+        android:background="@drawable/tablayout_bg"
         app:tabMode="scrollable" />
 
     <androidx.viewpager2.widget.ViewPager2

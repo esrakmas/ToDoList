@@ -11,7 +11,6 @@ class FavoriteTasksAdapter(private val favoriteTasks: List<Task>, private val on
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val titleTextView: TextView = view.findViewById(R.id.textViewTaskTitle)
         val descriptionTextView: TextView = view.findViewById(R.id.textViewTaskDescription)
-        val groupTextView: TextView = view.findViewById(R.id.textViewTaskGroup)
 
         init {
             view.setOnClickListener {
@@ -29,7 +28,6 @@ class FavoriteTasksAdapter(private val favoriteTasks: List<Task>, private val on
         val task = favoriteTasks[position]
         holder.titleTextView.text = task.title
         holder.descriptionTextView.text = task.description
-        holder.groupTextView.text = task.group
     }
 
     override fun getItemCount() = favoriteTasks.size

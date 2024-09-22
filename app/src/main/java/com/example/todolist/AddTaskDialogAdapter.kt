@@ -42,7 +42,6 @@ class AddTaskDialogAdapter(
     // Dialog başlangıç ayarları (Grup seçimi, tarih ve saat seçici)
     private fun setupDialog() {
         setupGroupSelection()  // Grup seçimini kur
-        setupDateAndTime()  // Tarih ve saat seçimini kur
         if (task.id.isNotEmpty()) {
             loadTaskDetails() // Mevcut görev bilgilerini yükle
         }
@@ -79,45 +78,11 @@ class AddTaskDialogAdapter(
             }
     }
 
-    // Tarih ve saat seçici kurar
-    private fun setupDateAndTime() {
-        binding.addTaskDate.setOnClickListener { showDatePickerDialog() }
-        binding.addSetReminder.setOnClickListener { showTimePickerDialog() }
-    }
-
-    // Tarih seçici diyalogunu gösterir
-    private fun showDatePickerDialog() {
-        DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                calendar.set(year, month, dayOfMonth)
-                updateDueDate()  // Tarih alanını güncelle
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
-    }
-
-    // Saat seçici diyalogunu gösterir
-    private fun showTimePickerDialog() {
-        TimePickerDialog(context, { _, hour, minute ->
-            calendar.set(Calendar.HOUR_OF_DAY, hour)
-            calendar.set(Calendar.MINUTE, minute)
-            updateReminderTime()  // Hatırlatıcı saatini güncelle
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
-    }
-
-    // Seçilen tarihi gösterir
-    private fun updateDueDate() {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        binding.addTaskDate.text = format.format(calendar.time)
-    }
 
     // Seçilen hatırlatma saatini gösterir
     private fun updateReminderTime() {
         val format = SimpleDateFormat("HH:mm", Locale.getDefault())
-        binding.addSetReminder.text = format.format(calendar.time)
+
     }
 
     // Görevi kaydetmek için gerekli validasyonları yapar ve Firebase'e kaydeder
@@ -164,11 +129,14 @@ class AddTaskDialogAdapter(
     }
 
     private fun setupRecyclerView(favoriteTasks: List<Task>) {
-        // LayoutManager ekleyin
         binding.recyclerViewFavoriteTasks.layoutManager = LinearLayoutManager(context)
 
         val adapter = FavoriteTasksAdapter(favoriteTasks) { task ->
-            // Görev seçildiğinde yapılacak işlemler
+            // Favori görev seçildiğinde AddTaskDialogAdapter'ı aç
+            val dialog = AddTaskDialogAdapter(context, task) { updatedTask ->
+                // Güncelleme sonrası yapılacak işlemler
+            }
+            dialog.showAddTaskDialog()
         }
         binding.recyclerViewFavoriteTasks.adapter = adapter
         adapter.notifyDataSetChanged()
@@ -182,8 +150,6 @@ class AddTaskDialogAdapter(
         binding.addTaskTitle.setText(task.title)
         binding.addTaskDescription.setText(task.description)
         binding.addSpinnerTaskGroup.setSelection(getGroupIndex(task.group))
-        calendar.timeInMillis = task.dueDate  // Tarih ve saat için mevcut değeri ayarla
-        updateDueDate()
         updateReminderTime()  // Hatırlatma zamanını güncelle
     }
 

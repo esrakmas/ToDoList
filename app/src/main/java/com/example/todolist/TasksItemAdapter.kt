@@ -41,6 +41,12 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
             binding.taskTitle.text = task.title
             binding.taskDescription.text = task.description
 
+            if (task.description.isEmpty()) {
+                binding.taskDescription.visibility = View.GONE
+            } else {
+                binding.taskDescription.visibility = View.VISIBLE
+            }
+
             // Long türündeki dueDate ve reminder'ı String formatında göster
             val dueDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val reminderFormat = SimpleDateFormat("HH:mm", Locale.getDefault())

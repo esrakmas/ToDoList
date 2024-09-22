@@ -46,52 +46,28 @@
         app:layout_constraintTop_toBottomOf="@+id/addSpinnerTaskGroup" />
 
     <TextView
-        android:id="@+id/addTaskDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:clickable="true"
-        android:drawableLeft="@drawable/baseline_calendar_month_24"
-        android:drawablePadding="8dp"
-        android:focusable="false"
-        android:hint="Tarih Seç"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addCustomGroup" />
-
-    <TextView
-        android:id="@+id/addSetReminder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="12dp"
-        android:clickable="true"
-        android:drawableLeft="@drawable/baseline_alarm_24"
-        android:drawablePadding="8dp"
-        android:focusable="false"
-        android:hint="Hatırlatıcı Ekle"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addCustomGroup" />
-
-    <TextView
         android:id="@+id/favoriteTasksTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="Favori Görevler"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSetReminder" />
+        app:layout_constraintTop_toBottomOf="@+id/addCustomGroup" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFavoriteTasks"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/favoriteTasksTitle" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/favoriteTasksTitle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

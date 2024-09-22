@@ -15,7 +15,9 @@ class SortDialogHelper(private val context: Context, private val onSortSelected:
         val sortOptions = listOf(
             SortOptionItem(SortOption.OLD_TO_NEW, "Sırala: Eskiden Yeniye", R.drawable.ic_sort_old_to_new),
             SortOptionItem(SortOption.NEW_TO_OLD, "Sırala: Yeniden Eskiye", R.drawable.ic_sort_new_to_old),
-            SortOptionItem(SortOption.DRAG_AND_DROP, "Sırala: Sürükleyerek", R.drawable.baseline_drag_handle_24)
+            SortOptionItem(SortOption.DRAG_AND_DROP, "Sırala: Sürükleyerek",
+                R.drawable.touch
+            )
         )
 
         val builder = AlertDialog.Builder(context)
