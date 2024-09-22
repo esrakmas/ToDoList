@@ -39,9 +39,11 @@ class SortDialogHelper(
             onSortSelected(option)
         }
 
-        // ListView için adapter ayarla
+
         builder.setAdapter(adapter, null)
-        builder.show()
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialog.show()
     }
 
     data class SortOptionItem(val option: SortOption, val text: String, val iconResId: Int)

@@ -2,21 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:orientation="horizontal"
-    android:padding="16dp"
-    android:background="@color/white"> <!-- Arka plan rengi beyaz -->
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/sort_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:contentDescription="Sıralama İkonu"/>
+        android:contentDescription="Sıralama İkonu" />
 
     <TextView
         android:id="@+id/sort_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="@color/black"/> <!-- Yazı rengi siyah -->
+        android:textSize="16sp" />
 </LinearLayout>

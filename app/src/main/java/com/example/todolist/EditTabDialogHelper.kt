@@ -13,7 +13,7 @@ class EditTabDialogHelper(
     // tab  seçenekleri
     fun showGroupOptionsDialog(group: String) {
         val options = arrayOf("Grubu Güncelle", "Grubu Sil")
-        AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context)
             .setTitle("Seçenekler")
             .setItems(options) { _, which ->
                 when (which) {
@@ -21,13 +21,16 @@ class EditTabDialogHelper(
                     1 -> showDeleteConfirmationDialog(group)
                 }
             }
-            .show()
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialog.show()
     }
 
     private fun showUpdateGroupDialog(oldGroup: String) {
         val editText = EditText(context).apply { hint = "Yeni grup adını girin" }
 
-        AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context)
             .setTitle("Grup Güncelle")
             .setView(editText)
             .setPositiveButton("Güncelle") { _, _ ->
@@ -39,8 +42,12 @@ class EditTabDialogHelper(
                 }
             }
             .setNegativeButton("İptal", null)
-            .show()
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialog.show()
     }
+
 
     private fun updateGroupName(oldGroup: String, newGroup: String) {
         firebaseHelper.updateGroupName(oldGroup, newGroup) { success ->
@@ -54,13 +61,18 @@ class EditTabDialogHelper(
     }
 
     private fun showDeleteConfirmationDialog(group: String) {
-        AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context)
             .setTitle("Grubu Sil")
             .setMessage("Bu grup içindeki tüm görevlerle birlikte silinecek. Emin misiniz?")
             .setPositiveButton("Evet") { _, _ -> deleteGroupAndTasks(group) }
             .setNegativeButton("Hayır", null)
-            .show()
+            .create()
+
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialog.show()
     }
+
 
     private fun deleteGroupAndTasks(group: String) {
         firebaseHelper.deleteGroup(group) { success ->

@@ -28,14 +28,17 @@ class UpdateTaskDialogHelper(
     }
 
     fun showUpdateTaskDialog() {
-        AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context)
             .setTitle("Görevi Güncelle")
             .setView(binding.root)
             .setPositiveButton("Güncelle") { _, _ -> updateTask() }
             .setNegativeButton("İptal", null)
             .create()
-            .show()
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialog.show()
     }
+
 
     private fun setupDialog() {
         with(binding) {

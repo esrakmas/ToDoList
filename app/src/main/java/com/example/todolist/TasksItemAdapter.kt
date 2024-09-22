@@ -104,7 +104,7 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
             }
         }
 
-        // Hatırlatıcı ekleme
+
         private fun showReminderDialog(task: Task) {
             val builder = AlertDialog.Builder(binding.root.context)
             builder.setTitle("Hatırlatıcı Ekle")
@@ -113,7 +113,6 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
                 .inflate(R.layout.dialog_set_reminder, null)
             builder.setView(view)
 
-            // Tarih ve saat seçicileri
             val datePicker = view.findViewById<DatePicker>(R.id.datePicker)
             val timePicker = view.findViewById<TimePicker>(R.id.timePicker)
 
@@ -132,10 +131,11 @@ class TasksItemAdapter(private val tasks: MutableList<Task>) :
 
             builder.setNegativeButton("İptal") { dialog, _ ->
                 dialog.dismiss()
-                binding.btnReminder.isChecked = false // Tıklanmadan kalsın
+                binding.btnReminder.isChecked = false
             }
 
             val dialog = builder.create()
+            dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
             dialog.window?.setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT

@@ -27,16 +27,19 @@ class AddTaskDialogHelper(
         setupDialog()  // Dialog'un ayarlarını kur
     }
 
-    // Görev ekleme diyalogunu gösterir
     fun showAddTaskDialog() {
-        AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context)
             .setTitle("Yeni Görev")
             .setView(binding.root)
             .setPositiveButton("Kaydet") { _, _ -> saveTask() }
             .setNegativeButton("İptal", null)
             .create()
-            .show()
+
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialog.show()
     }
+
 
     // Dialog başlangıç ayarları (Grup seçimi, tarih ve saat seçici)
     private fun setupDialog() {
